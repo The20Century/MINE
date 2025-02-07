@@ -59,7 +59,7 @@ app.use('/chatImg', express.static(path.join(__dirname, 'chatImg')));
 app.post('/getChattingMessage',async (req, res) => {
     const data = req.body
     console.log(data)
-    console.log("headers ::::: " + JSON.stringify(req.headers))
+    // console.log("headers ::::: " + JSON.stringify(req.headers))
     let chattingData = {}
     try {
         const rawSessionId = req.cookies['SESSIONID'];
@@ -69,7 +69,6 @@ app.post('/getChattingMessage',async (req, res) => {
             data.buyerId = session.userInfo.userId
             data.sender = session.userInfo.userId
         }
-        console.log(data)
 
         let selectChat = await selectChatting(data)
         chattingData.chat = selectChat.length !== 0 ? selectChat : await selectOrInsertChattingRoom(data)
@@ -91,8 +90,6 @@ app.get('/list', async (req, res) => {
     try {
         const sessionId = Buffer.from(rawSessionId, 'base64').toString('utf-8');
         const session = await getSessionData(sessionId);
-        console.log("session.userId::::::::::::::::::::::"+session.userInfo.userId)
-        console.log(session)
         const chatList = await selectChattingList(session.userInfo.userId); // selectChattingList가 데이터를 반환
         res.status(200).json(chatList); // 클라이언트에 데이터 반환
     } catch (err) {

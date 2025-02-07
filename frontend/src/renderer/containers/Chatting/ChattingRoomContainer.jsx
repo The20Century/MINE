@@ -12,7 +12,6 @@ import TextMessageComponent from '../../components/Chat/TextMessageComponent'
 import ImageMessageComponent from '../../components/Chat/ImageMessageComponent'
 import {authState} from "../../../recoil/atoms/loginUserAtom.js";
 import {useNavigate} from "react-router-dom";
-
 const ChattingRoomContainer = () => {
     // chatting room 번호
     const auth = useRecoilValue(authState)
@@ -40,6 +39,7 @@ const ChattingRoomContainer = () => {
 
         if(drawerVisible && roomData.roomId && socket == null){
             const newSocket = io('http://localhost:3080/chat', {
+                // transports : ["websocket"],
                 withCredentials: true,
                 extraHeaders: {
                     chattingRoom: roomData.roomId,

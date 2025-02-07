@@ -218,7 +218,7 @@ const selectOrInsertChattingRoom = async (data) => {
                                 CASE
                                     WHEN COALESCE(tc.images, '[]'::jsonb) = '[]'::jsonb THEN 'text' -- 빈 배열인 경우 'text' 반환
                                     ELSE 'images'
-                                    END AS message,
+                                    END AS message
                             FROM 
                                 tbl_chatting    
                             WHERE 
@@ -327,7 +327,7 @@ const selectChatting = async (data) => {
             )
             .map(chat => chat.chatting_id);
         console.log(unreadChatIds)
-        console.log(chatRows)
+        // console.log(chatRows)
         // 읽지 않은 메시지가 있으면 업데이트
         if (unreadChatIds.length > 0) {
             const updateQuery = `

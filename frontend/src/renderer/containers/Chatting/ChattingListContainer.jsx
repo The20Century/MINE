@@ -142,7 +142,7 @@ const ChattingListComponent = ({ chat }) => {
             className="flex justify-between px-5 gap-5 w-full cursor-pointer bg-white"
             onClick={async () => {
                     const res = await sessionCheck()
-                    if(res.data.status) {
+                    if(res.data) {
                         await fetchMessage()
                         setChatContainerState("roomContainer")
                     } else {
