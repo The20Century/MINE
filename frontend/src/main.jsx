@@ -27,7 +27,8 @@ const loadKakaoMap = () => {
         script.onload = () => {
             console.log('카카오맵 스크립트가 로드되었습니다.');
         };
-        script.onerror = () => {
+        script.onerror = (e) => {
+            console.error(e)
             console.error('카카오맵 스크립트 로드에 실패했습니다.');
         };
     } else {
