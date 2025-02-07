@@ -17,7 +17,7 @@ const queryClient = new QueryClient({
 const loadKakaoMap = () => {
     const kakaoApiKey = import.meta.env.VITE_KAKAO_API_KEY; // .env에서 API 키 가져오기
     const existingScript = document.querySelector(`script[src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoApiKey}&autoload=false&libraries=services"]`);
-
+    console.log("::::::::::::::::::::::::::::: " + kakaoApiKey)
     // 중복 삽입 방지
     if (!existingScript) {
         const script = document.createElement('script');
