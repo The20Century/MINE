@@ -1,11 +1,11 @@
 const redisClient = require('../service/redisClient');
 const {getSessionData} = require('../service/sessionService');
+const logger = require('../config/logger')
 const sessionValidator = async (req, res, next) => {
     const rawSessionId = req.cookies['SESSIONID'];
     let jsonData = {status : false, message : ''}
     try {
         let sessionId = Buffer.from(rawSessionId, 'base64').toString('utf-8');
-        console.log(sessionId)
         if (req.path === '/chat/upload' || req.path.startsWith('/chat/chatImg')) {
             return next();
         }
@@ -23,7 +23,7 @@ const sessionValidator = async (req, res, next) => {
         next();
     }catch (error){
         jsonData.message = 'internal server error'
-        console.error('session validation error : ', error)
+        logger.error('[session][validation][error] ' + error)
         return res.status(500).json(jsonData)
     }
 }

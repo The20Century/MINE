@@ -4,7 +4,7 @@ const compression = require('compression'); // compression 추가
 const dbService = require('../service/postgresService');
 const sessionValidator = require('../middleware/sessionValidator');
 const {getSessionData} = require("../service/sessionService"); // 세션 유효성 검사 미들웨어
-
+const logger = require('../config/logger')
 const sse = new SSE();
 const app = express();
 
@@ -20,7 +20,6 @@ app.get('/unread-messages', async (req, res) => {
     const sessionId = Buffer.from(rawSessionId, 'base64').toString('utf-8');
     const session = await getSessionData(sessionId);
     const userId = session.userInfo.userId; // 세션에서 userId 가져오기
-    // const userId = req.query.userId;
 
     if (!userId) {
         return res.status(400).json({ message: 'userId is required' });
@@ -41,7 +40,7 @@ app.get('/unread-messages', async (req, res) => {
 
     // 연결 종료 시 삭제
     req.on('close', () => {
-        console.log(`Connection closed for user: ${userId}`);
+        logger.info('[SSE][close] Connection closed userId : ' + userId)
         delete userUnreadConnections[userId];
     });
 });
@@ -56,7 +55,7 @@ setInterval(async () => {
             // SSE를 통해 해당 사용자에게만 데이터 전송
             userUnreadConnections[userId].sse.send({ unreadCount });
         } catch (error) {
-            console.error(`Failed to fetch unread messages for user ${userId}:`, error);
+            logger.error(`[SSE][error] Failed to fetch unread messages for user : ${userId}  ${error}`)
         }
     }
 }, 5000);

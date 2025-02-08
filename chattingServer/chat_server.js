@@ -8,13 +8,16 @@ const sessionMiddleware = require('./service/sessionMiddleware')
 const sessionValidation = require('./middleware/sessionValidator')
 const sessionCheckHandler = require('./router/sessionCheckHandler')
 const sseHandler = require('./router/sseHandler');
+const logger = require('./config/logger')
+
+
 const helmet = require('helmet');
 const cors = require('cors');
 const compression = require("compression");
 const port = 3080;
 app.use(cookieParser());
 app.use(cors({
-    origin: 'http://localhost:5173', // React 클라이언트 URL
+    origin: ['http://localhost:5173', 'http://slowdeveloper.kro.kr/'], // React 클라이언트 URL
     credentials: true,              // 쿠키 허용
 }))
 app.use(helmet({
@@ -34,5 +37,5 @@ app.use('/chat/sse', sseHandler);
 chattingSocket(webApp)
 
 webApp.listen((port), () => {
-    console.log(`Server is running on port ${port}`);
+    logger.info("chatting app start, port : " + port)
 })
