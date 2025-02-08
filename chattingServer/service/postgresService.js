@@ -1,5 +1,6 @@
 const { Pool } = require('pg');
 require('dotenv').config();
+const logger = require('../config/logger')
 const pool = new Pool({
     user : process.env.PG_USER,
     host : process.env.PG_HOST,
@@ -8,7 +9,8 @@ const pool = new Pool({
     port : process.env.PG_PORT
 })
 // 채팅리스트페이지
-const selectChattingList = async (userId) => {
+const selectChattingList = async (userId, fLog) => {
+    logger.info(fLog + '[selectChattingList][userId] ' + userId);
     const query = `
         SELECT
             room.room_id AS roomId,
@@ -55,6 +57,7 @@ const selectChattingList = async (userId) => {
     `;
 
     try {
+        logger.info(fLog + '[selectChattingList][query] ' + query);
         const result = await pool.query(query);
         const chattingList = result.rows.map((prev) => ({
             sellerId : prev.sellerid,
@@ -69,42 +72,47 @@ const selectChattingList = async (userId) => {
             receiver : prev.receiver,
             sender : userId
         }))
+        logger.info(fLog + '[selectChattingList][ChattingList] ' + JSON.stringify(chattingList));
         return chattingList;
     } catch (error) {
-        console.error('대화 내용 조회 실패:', error);
+        logger.info(fLog + '[selectChattingList][error] 대화 내용 조회 실패  : ' + error);
         throw error;
     }
 }
 
-const selectUserByBuyerId = async (data)  => {
+const selectUserByBuyerId = async (data,fLog)  => {
     const query = `
         select * from tbl_user
         where user_id = ${data.buyerId}
     `
+    logger.info(fLog+'[selectUserByBuyerId][query] ' + query)
     try {
         const result = await pool.query(query);
+        logger.info(fLog+'[selectUserByBuyerId][result] ' + result.rows[0])
         return result.rows[0];
     } catch (error) {
-        console.error('select used item error:', error);
+        logger.info(fLog+'[selectUserByBuyerId][fail select usedItem] ' + error)
         throw error;
     }
 }
 
-const selectItemById = async (data) => {
+const selectItemById = async (data, fLog) => {
     const query = `
         select a.*, b.* from tbl_used_item a, tbl_user b 
         where a.user_id = b.user_id and used_item_id = ${data.itemId}
     `
+    logger.info(fLog+'[selectItemById] ' + query)
     try {
         const result = await pool.query(query);
+        logger.info(fLog+'[selectItemById][result] ' + result)
         return result.rows[0];
     } catch (error) {
-        console.error('select used item error:', error);
+        logger.error(fLog+'[selectItemById][fail select usedItem] ' + error)
         throw error;
     }
 }
 
-const selectRoomId = async (data) =>{
+const selectRoomId = async (data, fLog) =>{
     const roomSelectQuery = `
         SELECT 
             room_id 
@@ -117,19 +125,20 @@ const selectRoomId = async (data) =>{
             AND item_type = $4
     `
     const values = [data.sellerId, data.buyerId, data.itemId, data.itemType];
-
+    logger.info(fLog + '[roomSelectQuery][query] ' + roomSelectQuery)
     try {
         const result = await pool.query(roomSelectQuery, values);
+        logger.info(fLog + '[roomSelectQuery][roomId] ' + result.rows[0].room_id)
         // console.log(result.rows)
         return result.rows[0].room_id;
     } catch (error) {
-        console.error('::', error);
+        logger.info(fLog + '[roomSelectQuery][fail select roomId] ' +error)
         throw error;
     }
 
 }
 
-const selectOrInsertChattingRoom = async (data) => {
+const selectOrInsertChattingRoom = async (data, fLog) => {
     const roomSelectQuery = `
         SELECT room_id FROM tbl_chatting_room
         WHERE 
@@ -195,13 +204,16 @@ const selectOrInsertChattingRoom = async (data) => {
         const values = [data.sellerId, data.buyerId, data.itemId, data.itemType];
         let result
         try {
+            logger.info(fLog+'[selectOrInsertChattingRoom][roomSelectQuery] ' + roomSelectQuery)
             let selectRoom = await pool.query(roomSelectQuery, values);
             if(selectRoom.rows.length !== 0){
                 result = await pool.query(selectQuery, values);
+                logger.info(fLog+'[selectOrInsertChattingRoom][roomSelectQuery][result] ' + result)
             }else{
                 const insertResult = await pool.query(insertQuery, values);
+                logger.info(fLog+'[selectOrInsertChattingRoom][insertQuery] ' + insertQuery)
                 const roomId = insertResult.rows[0].room_id;
-                console.log('새 채팅방 생성, room_id:', roomId);
+                logger.info(fLog+'[selectOrInsertChattingRoom][insertQuery][RoomId 채팅방 생성] ' + roomId)
                 result = await pool.query(
                     `
                             SELECT 
@@ -228,16 +240,17 @@ const selectOrInsertChattingRoom = async (data) => {
                             `,
                     [roomId]
                 );
+
             }
-            // console.log('대화 내용:', result.rows);
+            logger.info(fLog+'[selectOrInsertChattingRoom][대화 내용] ' + JSON.stringify(result.rows))
             return result.rows; // 최종 데이터 반환
         } catch (error) {
-            console.error('대화 내용 조회 실패:', error);
+            logger.error(fLog+'[selectOrInsertChattingRoom][대화 내용 조회 실패] ' + error)
             throw error;
         }
 }
 
-const selectChatting = async (data) => {
+const selectChatting = async (data, fLog) => {
     let query;
     let values;
 
@@ -316,8 +329,8 @@ const selectChatting = async (data) => {
 
     try {
         const result = await pool.query(query, values);
+        logger.info(fLog+'[selectChatting][query]' + query)
         const chatRows = result.rows;
-
         // 읽지 않은 메시지 필터링 (내가 받은 메시지만 포함)
         const unreadChatIds = chatRows
             .filter(chat =>
@@ -326,7 +339,7 @@ const selectChatting = async (data) => {
                 chat.chatting_receive_user_id === data.sender // 내가 받은 메시지만
             )
             .map(chat => chat.chatting_id);
-        console.log(unreadChatIds)
+        logger.info(fLog+'[selectChatting][unreadChatIds] ' + unreadChatIds)
         // console.log(chatRows)
         // 읽지 않은 메시지가 있으면 업데이트
         if (unreadChatIds.length > 0) {
@@ -337,12 +350,11 @@ const selectChatting = async (data) => {
             `;
             const updateValues = [unreadChatIds, data.receive];
             await pool.query(updateQuery, updateValues);
-            console.log('읽음 처리 완료:', unreadChatIds);
+            logger.info(fLog+'[selectChatting][success Read] ' + unreadChatIds)
         }
-
         return chatRows; // 대화 내역 반환
     } catch (error) {
-        console.error('대화 내용 조회 실패:', error);
+        logger.error(fLog+'[selectChatting][fail Read] ' + error)
         throw error;
     }
 };
@@ -422,8 +434,7 @@ const unReadMsgCount = async (userId) => {
     }
 }
 
-const selectRoomData = async (data) => {
-    // console.log(data)
+const selectRoomData = async (data,fLog) => {
     const query = `
         SELECT
             item.used_item_name,
@@ -462,8 +473,9 @@ const selectRoomData = async (data) => {
             ) sender
     `
     try {
+        logger.info(fLog+'[selectRoomData][query] ' + query)
         const result = await pool.query(query);
-        // console.log(result)
+        logger.info(fLog+'[selectRoomData][result] ' + JSON.stringify(result))
         const roomData = {
             itemName : result.rows[0].used_item_name,
             itemPrice : result.rows[0].used_item_price,
@@ -476,10 +488,10 @@ const selectRoomData = async (data) => {
             senderTrustScore:  result.rows[0].sender_trust_score
         }
 
-        // console.log(roomData)
+        logger.info(fLog+'[selectRoomData][roomData] ' + JSON.stringify(roomData))
         return roomData;
     } catch (error) {
-        console.error('::', error);
+        logger.info(fLog+'[selectRoomData][fail select roomData] ' + error)
         throw error;
     }
 }

@@ -38,7 +38,7 @@ const ChattingRoomContainer = () => {
         console.log("roomData.receive"+ roomData.receive)
 
         if(drawerVisible && roomData.roomId && socket == null){
-            const newSocket = io('http://localhost:3080/chat', {
+            const newSocket = io('http://localhost:3080/chatting', {
                 // transports : ["websocket"],
                 withCredentials: true,
                 extraHeaders: {

@@ -1,5 +1,5 @@
 const redisClient = require('./redisClient');
-
+const logger = require('../config/logger')
 /**
  * Redis에서 세션 데이터를 가져와 유저 정보를 반환하는 함수
  * @param {string} sessionId - Redis의 세션 ID
@@ -11,16 +11,13 @@ const getSessionData = async (sessionId) => {
         const sessionData = await redisClient.hGetAll(`spring:session:sessions:${sessionId}`);
 
         if (!Object.keys(sessionData).length) {
-            console.error('세션 데이터 없음.');
+            logger.error('[getSessionData] 세션 데이터가 없음')
             return false;
         }
 
-        // console.log('Redis에서 가져온 세션 데이터:', sessionData);
-
-        // sessionAttr:userInfo 필드에서 유저 정보 추출
         const userInfoRaw = sessionData['sessionAttr:userInfo'];
         if (!userInfoRaw) {
-            console.error('sessionAttr:userInfo 필드가 Redis 데이터에 없습니다.');
+            logger.error('[getSessionData] Redis 데이터에 없습니다.')
             return false;
         }
 
@@ -34,7 +31,7 @@ const getSessionData = async (sessionId) => {
             creationTime: sessionData['creationTime'],
         };
     } catch (err) {
-        console.error('Redis 에러 또는 JSON 파싱 실패:', err);
+        logger.error('[getSessionData][error] Redis 에러 또는 JSON 파싱 실패 ' + err)
         return null;
     }
 };
