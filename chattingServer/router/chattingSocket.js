@@ -7,10 +7,11 @@ const logger = require('../config/logger')
 const chattingSocket = (server) => {
     const io = socketIo(server, {
         cors: {
-            origin: ['http://localhost:5173', 'http://slowdeveloper.kro.kr/'], // React 클라이언트 URL
+            origin: ['http://slowdeveloper.kro.kr', 'http://localhost:5173'],
             methods: ["GET", "POST"],
             credentials: true, // 쿠키 허용
-        }
+        },
+        transports: ['websocket', 'polling']
     });
     logger.info('[Socket][uri] | /chatting')
     const chatNamespace = io.of('/chatting'); // '/chat' 네임스페이스 생성

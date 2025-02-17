@@ -41,6 +41,7 @@ const ChattingRoomContainer = () => {
             // const newSocket = io('http://localhost:3080/chatting', {
             const newSocket = io('http://slowdeveloper.kro.kr/chatting/', {
                 // transports : ["websocket"],
+                transports: ['websocket', 'polling'],
                 withCredentials: true,
                 extraHeaders: {
                     chattingRoom: roomData.roomId,
