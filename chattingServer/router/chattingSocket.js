@@ -15,7 +15,7 @@ const chattingSocket = (server) => {
         transports: ['websocket'],
     });
     logger.info('[Socket][uri] | /chatting')
-    // const chatNamespace = io.of('/chatting'); // '/chat' 네임스페이스 생성
+    // const io = io.of('/chatting'); // '/chat' 네임스페이스 생성
 
     io.on('connection',async (chatSocket) => {
         logger.info('[Socket][connection] | success')
@@ -67,7 +67,7 @@ const chattingSocket = (server) => {
                     await dbService.pool.query(updateQuery, [unreadMessageIds, userId]);
 
                     // 읽음 상태 업데이트 브로드캐스트
-                    chatNamespace.to(chattingroom).emit('read', {
+                    io.to(chattingroom).emit('read', {
                         chatting_ids: unreadMessageIds,
                     });
                     logger.info(`[Socket][joinRoom][unreadMessage] | read state 처리 ${unreadMessageIds}`);
@@ -81,7 +81,7 @@ const chattingSocket = (server) => {
         chatSocket.on('message', async (message) => {
             logger.info(`[Socket][message][receive]  ${JSON.stringify(message)}`);
             try {
-                let roomClients = chatNamespace.adapter.rooms.get(chattingroom) || new Set();
+                let roomClients = io.adapter.rooms.get(chattingroom) || new Set();
                 logger.info(`[Socket][message][roomCheck][roomClients]  ${roomClients}`);
                 let isReceiverConnected = roomClients.size > 1 ? true : false;
                 logger.info(`[Socket][message][roomCheck][roomClients]  ${roomClients}`);
@@ -117,7 +117,7 @@ const chattingSocket = (server) => {
                     userEmail : session.userInfo.userEmail
                 }));
                 // 동일한 채팅방(room)에 있는 클라이언트에게 메시지 전달
-                chatNamespace.to(chattingroom).emit('message', {
+                io.to(chattingroom).emit('message', {
                     ...message,
                     sender : userId,
                     chatting_id: savedChat.chatting_id,
@@ -134,7 +134,7 @@ const chattingSocket = (server) => {
         chatSocket.on('disconnect', async (reason) => {
             logger.info(`[Socket][disconnect] \`클라이언트 연결 해제: ${chatSocket.id}, 이유: ${reason}, roomId :${chattingroom}\``);
             try {
-                let roomClients = chatNamespace.adapter.rooms.get(chattingroom) || new Set();
+                let roomClients = io.adapter.rooms.get(chattingroom) || new Set();
                 // 상대방이 방에 접속해 있는지 확인
                 if(roomClients.size === 0){
                     const query = `
