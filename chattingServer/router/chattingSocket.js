@@ -21,6 +21,9 @@ const chattingSocket = (server) => {
         logger.info('[Socket][connection] | success')
         let { chattingroom,receiver} = chatSocket.handshake.headers;
         logger.info('[Socket][header] | ' + chatSocket.handshake.headers);
+        chatSocket.data.chattingroom = chattingroom;
+        chatSocket.data.receiver = receiver;
+        logger.info('[chatSocket.data]' + JSON.stringify(chatSocket.data))
         const cookies = cookie.parse(chatSocket.handshake.headers.cookie || '');
         const sessionId = atob(cookies['SESSIONID']);
         logger.info('[Socket][sessionId] | ' + sessionId);
@@ -38,10 +41,10 @@ const chattingSocket = (server) => {
 
         const userId = session.userInfo.userId
         let sender = session.userInfo.userId
-        logger.info(`[Socket][info] | 채팅방 ID: ${chattingroom}, 발신자: ${sender}, 수신자: ${receiver}`);
-        chatSocket.join(chattingroom);
-        console.log(`${chatSocket.id} 채팅방 ${chattingroom}에 참여`);
-        logger.info(`[Socket][info] | ${chatSocket.id} 채팅방 ${chattingroom}에 참여`);
+        logger.info(`[Socket][info] | 채팅방 ID: ${chatSocket.data.chattingroom}, 발신자: ${sender}, 수신자: ${chatSocket.data.receiver}`);
+        chatSocket.join(chatSocket.data.chattingroom);
+        logger.info(`${chatSocket.id} 채팅방 ${chatSocket.data.chattingroom}에 참여`);
+        logger.info(`[Socket][info] | ${chatSocket.id} 채팅방 ${chatSocket.data.chattingroom}에 참여`);
 
         // 방에 새로 들어왔을 때 읽지 않은 메시지를 읽음 처리
         chatSocket.on('joinRoom', async ({ roomId }) => {
@@ -80,9 +83,9 @@ const chattingSocket = (server) => {
         // 메시지 수신
         chatSocket.on('message', async (message) => {
             logger.info(`[Socket][message][receive]  ${JSON.stringify(message)}`);
+            logger.info(`[Socket][message][roomCheck][chattingroom]  ${chatSocket.data.chattingroom}`);
             try {
-                let roomClients = io.adapter.rooms.get(chattingroom) || new Set();
-                logger.info(`[Socket][message][roomCheck][roomClients]  ${roomClients}`);
+                let roomClients = io.adapter.rooms.get(chatSocket.data.chattingroom) || new Set();
                 let isReceiverConnected = roomClients.size > 1 ? true : false;
                 logger.info(`[Socket][message][roomCheck][roomClients]  ${roomClients}`);
                 logger.info(`[Socket][message][roomCheck] 상대방 접속 확인: ${isReceiverConnected}`);
@@ -132,9 +135,9 @@ const chattingSocket = (server) => {
 
         // 연결 해제 처리
         chatSocket.on('disconnect', async (reason) => {
-            logger.info(`[Socket][disconnect] \`클라이언트 연결 해제: ${chatSocket.id}, 이유: ${reason}, roomId :${chattingroom}\``);
+            logger.info(`[Socket][disconnect] \`클라이언트 연결 해제: ${chatSocket.id}, 이유: ${reason}, roomId :${chatSocket.data.chattingroom}\``);
             try {
-                let roomClients = io.adapter.rooms.get(chattingroom) || new Set();
+                let roomClients = io.adapter.rooms.get(chatSocket.data.chattingroom) || new Set();
                 // 상대방이 방에 접속해 있는지 확인
                 if(roomClients.size === 0){
                     const query = `
@@ -142,7 +145,7 @@ const chattingSocket = (server) => {
                     FROM tbl_chatting
                     WHERE room_id = $1 
                     `;
-                    const result = await dbService.pool.query(query, [chattingroom]);
+                    const result = await dbService.pool.query(query, [chatSocket.data.chattingroom]);
                     const messageCount = result.rows[0].message_count;
                     // console.log(typeof messageCount)
 
@@ -152,13 +155,13 @@ const chattingSocket = (server) => {
                         DELETE FROM tbl_chatting_room
                         WHERE room_id = $1
                         `;
-                            await dbService.pool.query(deleteQuery, [chattingroom]);
-                        logger.info(`[Socket][disconnect] 빈 채팅방 삭제 완료: ${chattingroom}`);
+                            await dbService.pool.query(deleteQuery, [chatSocket.data.chattingroom]);
+                        logger.info(`[Socket][disconnect] 빈 채팅방 삭제 완료: ${chatSocket.data.chattingroom}`);
                     }else{
-                        logger.info(`[Socket][disconnect] 방에 메시지가 있어 삭제하지 않음: ${chattingroom}`);
+                        logger.info(`[Socket][disconnect] 방에 메시지가 있어 삭제하지 않음: ${chatSocket.data.chattingroom}`);
                     }
                 }else{
-                    logger.info(`[Socket][disconnect] 다른 사용자가 방에 남아있음: ${chattingroom}`);
+                    logger.info(`[Socket][disconnect] 다른 사용자가 방에 남아있음: ${chatSocket.data.chattingroom}`);
                 }
             }catch (e) {
                 logger.info(`[Socket][disconnect][error] ${e}`);
