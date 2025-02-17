@@ -20,8 +20,8 @@ const chattingSocket = (server) => {
     io.on('connection',async (chatSocket) => {
         logger.info('[Socket][connection] | success')
         // let { chattingroom,receiver} = chatSocket.handshake.headers;
-        let { chattingroom,receiver} = chatSocket.handshake.query;
-        const headers = new Header(chattingroom, receiver);
+        let { chattingRoom,receiver} = chatSocket.handshake.query;
+        const headers = new Header(chattingRoom, receiver);
         logger.info('[Socket][header] | ' + JSON.stringify(chatSocket.handshake.headers));
 
         logger.info('[socketHeader]' + JSON.stringify(headers))
@@ -71,7 +71,7 @@ const chattingSocket = (server) => {
                     await dbService.pool.query(updateQuery, [unreadMessageIds, userId]);
 
                     // 읽음 상태 업데이트 브로드캐스트
-                    io.to(chattingroom).emit('read', {
+                    io.to(headers.chattingroom).emit('read', {
                         chatting_ids: unreadMessageIds,
                     });
                     logger.info(`[Socket][joinRoom][unreadMessage] | read state 처리 ${unreadMessageIds}`);
@@ -86,7 +86,12 @@ const chattingSocket = (server) => {
             logger.info(`[Socket][message][receive]  ${JSON.stringify(message)}`);
             logger.info(`[Socket][message][roomCheck][chattingroom]  ${headers.chattingroom}`);
             try {
-                let roomClients = io.adapter.rooms.get(headers.chattingroom) || new Set();
+                let roomClients;
+                if (io.sockets.adapter.rooms instanceof Map) {
+                    roomClients = io.sockets.adapter.rooms.get(headers.chattingroom) || new Set();
+                } else {
+                    roomClients = io.sockets.adapter.rooms[headers.chattingroom] || new Set();
+                }
                 let isReceiverConnected = roomClients.size > 1 ? true : false;
                 logger.info(`[Socket][message][roomCheck][roomClients]  ${roomClients}`);
                 logger.info(`[Socket][message][roomCheck] 상대방 접속 확인: ${isReceiverConnected}`);
@@ -96,7 +101,7 @@ const chattingSocket = (server) => {
                     chatting_receive_user_id: message.receiver,
                     item_id: message.itemId,
                     chatting_content: message.text,
-                    room_id: chattingroom,
+                    room_id: headers.chattingroom,
                     is_deleted: false,
                     images: JSON.stringify(message.images || [])
                 });
@@ -121,7 +126,7 @@ const chattingSocket = (server) => {
                     userEmail : session.userInfo.userEmail
                 }));
                 // 동일한 채팅방(room)에 있는 클라이언트에게 메시지 전달
-                io.to(chattingroom).emit('message', {
+                io.to(headers.chattingroom).emit('message', {
                     ...message,
                     sender : userId,
                     chatting_id: savedChat.chatting_id,
