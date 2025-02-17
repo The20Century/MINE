@@ -43,7 +43,7 @@ const ChattingRoomContainer = () => {
             // const newSocket = io('http://slowdeveloper.kro.kr/socket.io/', {
                 // transports : ["websocket"],
                 path : '/socket.io/',
-                transports: ['websocket'],
+                transports: ['polling','websocket'],
                 withCredentials: true,
                 extraHeaders: {
                     chattingRoom: roomData.roomId,
