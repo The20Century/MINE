@@ -7,7 +7,7 @@ const logger = require('../config/logger')
 const chattingSocket = (server) => {
     const io = socketIo(server, {
         cors: {
-            origin: "http://localhost:5173",
+            origin: ['http://localhost:5173', 'http://slowdeveloper.kro.kr/'], // React 클라이언트 URL
             methods: ["GET", "POST"],
             credentials: true, // 쿠키 허용
         }
