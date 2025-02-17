@@ -5,4 +5,4 @@ class SocketHeader {
     }
 }
 
-module.exports = { SocketHeader };
+module.exports = { Header: SocketHeader };

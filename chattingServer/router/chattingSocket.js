@@ -3,7 +3,7 @@ const redisClient = require('../service/redisClient');
 const dbService = require('../service/postgresService');
 const {getSessionData} = require('../service/sessionService')
 const cookie = require('cookie')
-const {socketHeader} = require('../config/protocol');
+const {Header} = require('../config/protocol');
 const logger = require('../config/logger')
 const chattingSocket = (server) => {
     const io = socketIo(server, {
@@ -12,7 +12,7 @@ const chattingSocket = (server) => {
             methods: ["GET", "POST"],
             credentials: true, // 쿠키 허용
         },
-        transports: ['websocket'],
+        transports: ['polling','websocket'],
     });
     logger.info('[Socket][uri] | /chatting')
     // const io = io.of('/chatting'); // '/chat' 네임스페이스 생성
@@ -20,8 +20,8 @@ const chattingSocket = (server) => {
     io.on('connection',async (chatSocket) => {
         logger.info('[Socket][connection] | success')
         let { chattingroom,receiver} = chatSocket.handshake.headers;
-        const headers = new socketHeader(chattingroom, receiver);
-        logger.info('[Socket][header] | ' + chatSocket.handshake.headers);
+        const headers = new Header(chattingroom, receiver);
+        logger.info('[Socket][header] | ' + JSON.stringify(chatSocket.handshake.headers));
 
         logger.info('[socketHeader]' + JSON.stringify(headers))
         const cookies = cookie.parse(chatSocket.handshake.headers.cookie || '');
