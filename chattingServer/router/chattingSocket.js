@@ -11,7 +11,7 @@ const chattingSocket = (server) => {
             methods: ["GET", "POST"],
             credentials: true, // 쿠키 허용
         },
-        transports: ['websocket', 'polling']
+        transports: ['websocket']
     });
     logger.info('[Socket][uri] | /chatting')
     const chatNamespace = io.of('/chatting'); // '/chat' 네임스페이스 생성
