@@ -48,6 +48,10 @@ const ChattingRoomContainer = () => {
                 extraHeaders: {
                     chattingRoom: roomData.roomId,
                     receiver : roomData.receive,
+                },
+                query :{
+                    chattingRoom: roomData.roomId,
+                    receiver : roomData.receive,
                 }
             });
             setSocket(newSocket)
