@@ -1,4 +1,5 @@
 const socketIo = require('socket.io');
+const {Server} = require('socket.io');
 const redisClient = require('../service/redisClient');
 const dbService = require('../service/postgresService');
 const {getSessionData} = require('../service/sessionService')
@@ -11,12 +12,12 @@ const chattingSocket = (server) => {
             methods: ["GET", "POST"],
             credentials: true, // 쿠키 허용
         },
-        transports: ['websocket']
+        transports: ['websocket'],
     });
     logger.info('[Socket][uri] | /chatting')
-    const chatNamespace = io.of('/chatting'); // '/chat' 네임스페이스 생성
+    // const chatNamespace = io.of('/chatting'); // '/chat' 네임스페이스 생성
 
-    chatNamespace.on('connection',async (chatSocket) => {
+    io.on('connection',async (chatSocket) => {
         logger.info('[Socket][connection] | success')
         let { chattingroom,receiver} = chatSocket.handshake.headers;
         logger.info('[Socket][header] | ' + chatSocket.handshake.headers);

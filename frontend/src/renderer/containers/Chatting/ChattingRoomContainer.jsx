@@ -39,9 +39,10 @@ const ChattingRoomContainer = () => {
 
         if(drawerVisible && roomData.roomId && socket == null){
             // const newSocket = io('http://localhost:3080/chatting', {
-            // const newSocket = io('http://slowdeveloper.kro.kr/chatting/', {
-            const newSocket = io('http://slowdeveloper.kro.kr/socket.io/', {
+            const newSocket = io('http://slowdeveloper.kro.kr/', {
+            // const newSocket = io('http://slowdeveloper.kro.kr/socket.io/', {
                 // transports : ["websocket"],
+                path : '/socket.io/',
                 transports: ['websocket'],
                 withCredentials: true,
                 extraHeaders: {
