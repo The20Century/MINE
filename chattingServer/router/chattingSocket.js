@@ -19,7 +19,8 @@ const chattingSocket = (server) => {
 
     io.on('connection',async (chatSocket) => {
         logger.info('[Socket][connection] | success')
-        let { chattingroom,receiver} = chatSocket.handshake.headers;
+        // let { chattingroom,receiver} = chatSocket.handshake.headers;
+        let { chattingroom,receiver} = chatSocket.handshake.query;
         const headers = new Header(chattingroom, receiver);
         logger.info('[Socket][header] | ' + JSON.stringify(chatSocket.handshake.headers));
 
