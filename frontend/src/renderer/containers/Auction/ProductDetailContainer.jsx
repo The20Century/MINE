@@ -2,17 +2,20 @@ import React from 'react';
 import '../../../styles/auction/tableDefault.css';
 import useFormattedPrice from '../../../hooks/useFormattedPrice';
 
-const ProductDetailContainer = ({ detailInfo }) => {
-    const { productInfo, bidHistory } = detailInfo;
+const ProductDetailContainer = ({ auctionDetailInfo }) => {
+    const { auction_item_explain, tbl_auction_join } = auctionDetailInfo;
+    const auctionJoinData = tbl_auction_join.map((item) => JSON.parse(item));
+    const isValidAuctionJoinData = Object.values(auctionJoinData[0]).some((value) => value !== null);
+
     return (
         <div className="block lg:flex-col lg:min-h-[591px] space-y-12 lg:space-y-0 mb-12">
-            <ProductDescription productInfo={productInfo} />
-            <BidHistory bidHistory={bidHistory} />
+            <ProductDescription auction_item_explain={auction_item_explain} />
+            <BidHistory auctionJoinData={auctionJoinData} isValidAuctionJoinData={isValidAuctionJoinData} />
         </div>
     );
 };
 
-const ProductDescription = ({ productInfo }) => {
+const ProductDescription = ({ auction_item_explain }) => {
     return (
         <div name="product-description" className="w-full lg:mr-[72px] w-full flex flex-col flex-auto false">
             <h3 className="md:text-[22px] lg:pb-5 w-full border-b border-gray-300 basis-[48px] font-bold pb-3 text-jnblack text-lg">
@@ -22,7 +25,7 @@ const ProductDescription = ({ productInfo }) => {
                 <div className="flex flex-col h-auto">
                     <article className="flex flex-col flex-1">
                         <p className="flex-1 py-5 text-base font-normal break-words break-all whitespace-pre-line text-jnGray-900">
-                            {productInfo.description}
+                            {auction_item_explain}
                         </p>
                     </article>
                 </div>
@@ -32,7 +35,7 @@ const ProductDescription = ({ productInfo }) => {
     );
 };
 
-const BidHistory = ({ bidHistory }) => {
+const BidHistory = ({ auctionJoinData, isValidAuctionJoinData }) => {
     const createBidUserName = (userEmail) => {
         const username = userEmail.split('@')[0];
         const halfIndex = Math.floor(username.length / 2);
@@ -47,33 +50,40 @@ const BidHistory = ({ bidHistory }) => {
             <h3 className="md:text-[22px] lg:pb-5 w-full border-b border-gray-300 basis-[48px] font-bold pb-3 text-jnblack text-lg">
                 입찰 내역
             </h3>
+
             <div className="tableDefault">
-                <table className="text-center">
-                    <colgroup>
-                        <col width="*" />
-                        <col width="25%;" />
-                        <col width="25%;" />
-                        <col width="*" />
-                    </colgroup>
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>입찰자</th>
-                            <th>입찰금액</th>
-                            <th>입찰일시</th>
-                        </tr>
-                    </thead>
-                    <tbody id="th_table">
-                        {bidHistory.map((history, i) => (
-                            <tr key={i}>
-                                <td>{i + 1}</td>
-                                <td>{createBidUserName(history.userEmail)}</td>
-                                <td>{useFormattedPrice(history.bidAmount)} 원</td>
-                                <td>{new Date(history.updateAt).toLocaleString()}</td>
+                {isValidAuctionJoinData ? (
+                    <table className="text-center">
+                        <colgroup>
+                            <col width="*" />
+                            <col width="25%;" />
+                            <col width="25%;" />
+                            <col width="*" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>입찰자</th>
+                                <th>입찰금액</th>
+                                <th>입찰일시</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody id="th_table">
+                            {auctionJoinData.map((history, i) => {
+                                return (
+                                    <tr key={i}>
+                                        <td>{i + 1}</td>
+                                        <td>{createBidUserName(history.auction_join_user_nickname)}</td>
+                                        <td>{useFormattedPrice(history.auction_join_price)} 원</td>
+                                        <td>{new Date(history.auction_join_created_at).toLocaleString()}</td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                ) : (
+                    <div>경매 참여자가 존재하지 않음</div>
+                )}
             </div>
         </>
     );

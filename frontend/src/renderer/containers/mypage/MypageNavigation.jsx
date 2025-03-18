@@ -32,6 +32,7 @@ const MypageNavigation = ({onItemClick}) => {
         queryFn: myProduct // 서버에서 데이터 가져오는 함수
     })
 
+
     const unregisterAction = useQuery({
         queryKey: "unregister",
         queryFn: () => unregister(),

@@ -98,10 +98,12 @@ app.get('/list', async (req, res) => {
     try {
         const sessionId = Buffer.from(rawSessionId, 'base64').toString('utf-8');
         const session = await getSessionData(sessionId);
+
         logger.info('[list][userId] | ' + session.userInfo.userId);
         logger.info('[list][userEmail] | ' + session.userInfo.userEmail);
         fLog = `[list][${session.userInfo.userEmail}]`
         const chatList = await selectChattingList(session.userInfo.userId, fLog); // selectChattingList가 데이터를 반환
+
         res.status(200).json(chatList); // 클라이언트에 데이터 반환
     } catch (err) {
         logger.error('[list][error] | 채팅 리스트 조회 실패 : '  + err);

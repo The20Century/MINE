@@ -339,6 +339,7 @@ const selectChatting = async (data, fLog) => {
                 chat.chatting_receive_user_id === data.sender // 내가 받은 메시지만
             )
             .map(chat => chat.chatting_id);
+
         logger.info(fLog+'[selectChatting][unreadChatIds] ' + unreadChatIds)
         // console.log(chatRows)
         // 읽지 않은 메시지가 있으면 업데이트

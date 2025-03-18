@@ -1,123 +1,49 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper';
 
-const SwipeImgComponent = ({ StImg }) => {
-    const imageData = [
-        {
-            id: 1,
-            alt: '아디다스 아디오스 아디제로--0',
-            src: 'https://img2.joongna.com/cafe-article-data/live/2024/06/22/1062585033/1719019322789_000_pdAUa_main.jpg?impolicy=resizeWatermark3&amp;isSecret=false',
-        },
-        {
-            id: 2,
-            alt: '아디다스 아디오스 아디제로--1',
-            src: 'https://img2.joongna.com/cafe-article-data/live/2024/06/22/1062585033/1719019322789_001_iRiu4.jpg?impolicy=resizeWatermark3&amp;isSecret=false',
-        },
-        {
-            id: 3,
-            alt: '아디다스 아디오스 아디제로--2',
-            src: 'https://img2.joongna.com/cafe-article-data/live/2024/06/22/1062585033/1719019322789_002_VssNl.jpg?impolicy=resizeWatermark3&amp;isSecret=false',
-        },
-        {
-            id: 4,
-            alt: '아디다스 아디오스 아디제로--3',
-            src: 'https://img2.joongna.com/cafe-article-data/live/2024/06/22/1062585033/1719019322789_003_y2XLP.jpg?impolicy=resizeWatermark3&amp;isSecret=false',
-        },
-        {
-            id: 5,
-            alt: '아디다스 아디오스 아디제로--4',
-            src: 'https://img2.joongna.com/cafe-article-data/live/2024/06/22/1062585033/1719019322790_004_HPwbV.jpg?impolicy=resizeWatermark3&amp;isSecret=false',
-        },
-    ];
-
-    const StSwipe = {
-        transform: 'translate3d(0px, 0px, 0px)',
-    };
+const SwipeImgComponent = ({ StImg, filePaths }) => {
+    console.log('filePaths', filePaths);
     return (
         <div className="carouselWrapper relative product-gallery swiperThumbnail product-gallery-slider dotsCircle">
-            <div
-                className="swiper swiper-initialized swiper-horizontal swiper-pointer-events swiper-backface-hidden"
-                dir="ltr"
+            <Swiper
+                slidesPerView={1} // 한 번에 하나의 슬라이드만 보여줌
+                slidesPerGroup={1} // 한 번에 하나의 슬라이드를 넘김
+                navigation={{
+                    nextEl: '#product-gallery-slider-next',
+                    prevEl: '#product-gallery-slider-prev',
+                }} // 커스텀 화살표
+                pagination={{ clickable: true }} // 페이지네이션 활성화
+                modules={[Navigation, Pagination]} // Swiper 모듈 등록
+                onSlideChange={() => console.log('slide change')}
+                onSwiper={(swiper) => console.log(swiper)}
             >
-                <div className="swiper-wrapper" style={StSwipe}>
-                    <div className="swiper-slide swiper-slide-active w-604">
-                        <div className="col-span-1 transition duration-150 ease-in hover:opacity-90 min-w-[200px] min-h-[200px] w-full relative pt-[100%] dim rounded-2xl">
-                            <img
-                                alt="아디다스 아디오스 아디제로--0"
-                                referrerPolicy="no-referrer"
-                                src="https://img2.joongna.com/cafe-article-data/live/2024/06/22/1062585033/1719019322789_000_pdAUa_main.jpg?impolicy=resizeWatermark3&amp;isSecret=false"
-                                decoding="async"
-                                data-nimg="fill"
-                                className="object-cover lg:w-[520px] lg:h-[520px] w-[335px] h-[335px] rounded-2xl top-1/2 left-1/2"
-                                style={StImg}
-                            />
-                        </div>
-                    </div>
-                    <div className="swiper-slide swiper-slide-next w-604">
-                        <div className="col-span-1 transition duration-150 ease-in hover:opacity-90 min-w-[200px] min-h-[200px] w-full relative pt-[100%] dim rounded-2xl">
-                            <img
-                                alt="아디다스 아디오스 아디제로--1"
-                                referrerPolicy="no-referrer"
-                                src="https://img2.joongna.com/cafe-article-data/live/2024/06/22/1062585033/1719019322789_001_iRiu4.jpg?impolicy=resizeWatermark3&amp;isSecret=false"
-                                decoding="async"
-                                data-nimg="fill"
-                                className="object-cover lg:w-[520px] lg:h-[520px] w-[335px] h-[335px] rounded-2xl top-1/2 left-1/2"
-                                style={StImg}
-                            />
-                        </div>
-                    </div>
-                    <div className="swiper-slide w-604">
-                        <div className="col-span-1 transition duration-150 ease-in hover:opacity-90 min-w-[200px] min-h-[200px] w-full relative pt-[100%] dim rounded-2xl">
-                            <img
-                                alt="아디다스 아디오스 아디제로--2"
-                                referrerPolicy="no-referrer"
-                                src="https://img2.joongna.com/cafe-article-data/live/2024/06/22/1062585033/1719019322789_002_VssNl.jpg?impolicy=resizeWatermark3&amp;isSecret=false"
-                                decoding="async"
-                                data-nimg="fill"
-                                className="object-cover lg:w-[520px] lg:h-[520px] w-[335px] h-[335px] rounded-2xl top-1/2 left-1/2"
-                                style={StImg}
-                            />
-                        </div>
-                    </div>
-                    <div className="swiper-slide w-604">
-                        <div className="col-span-1 transition duration-150 ease-in hover:opacity-90 min-w-[200px] min-h-[200px] w-full relative pt-[100%] dim rounded-2xl">
-                            <img
-                                alt="아디다스 아디오스 아디제로--3"
-                                referrerPolicy="no-referrer"
-                                src="https://img2.joongna.com/cafe-article-data/live/2024/06/22/1062585033/1719019322789_003_y2XLP.jpg?impolicy=resizeWatermark3&amp;isSecret=false"
-                                decoding="async"
-                                data-nimg="fill"
-                                className="object-cover lg:w-[520px] lg:h-[520px] w-[335px] h-[335px] rounded-2xl top-1/2 left-1/2"
-                                style={StImg}
-                            />
-                        </div>
-                    </div>
-                    <div className="swiper-slide w-604">
-                        <div className="col-span-1 transition duration-150 ease-in hover:opacity-90 min-w-[200px] min-h-[200px] w-full relative pt-[100%] dim rounded-2xl">
-                            <img
-                                alt="아디다스 아디오스 아디제로--4"
-                                referrerPolicy="no-referrer"
-                                src="https://img2.joongna.com/cafe-article-data/live/2024/06/22/1062585033/1719019322790_004_HPwbV.jpg?impolicy=resizeWatermark3&amp;isSecret=false"
-                                decoding="async"
-                                data-nimg="fill"
-                                className="object-cover lg:w-[520px] lg:h-[520px] w-[335px] h-[335px] rounded-2xl top-1/2 left-1/2"
-                                style={StImg}
-                            />
-                        </div>
-                    </div>
-                </div>
-                <div className="swiper-pagination swiper-pagination-clickable swiper-pagination-bullets swiper-pagination-horizontal">
-                    <span className="swiper-pagination-bullet swiper-pagination-bullet-active"></span>
-                    <span className="swiper-pagination-bullet"></span>
-                    <span className="swiper-pagination-bullet"></span>
-                    <span className="swiper-pagination-bullet"></span>
-                    <span className="swiper-pagination-bullet"></span>
-                </div>
-            </div>
+                {filePaths ? (
+                    filePaths.map((image, i) => (
+                        <SwiperSlide key={i}>
+                            <div className="col-span-1 transition duration-150 ease-in hover:opacity-90 min-w-[200px] min-h-[200px] w-full relative pt-[100%] dim rounded-2xl">
+                                <img
+                                    // alt={image.alt}
+                                    referrerPolicy="no-referrer"
+                                    src={`/api/files/display?filePath=${image}`}
+                                    decoding="async"
+                                    data-nimg="fill"
+                                    className="object-cover lg:w-[520px] lg:h-[520px] w-[335px] h-[335px] rounded-2xl top-1/2 left-1/2"
+                                    style={StImg}
+                                />
+                            </div>
+                        </SwiperSlide>
+                    ))
+                ) : (
+                    <div>없는 이미지</div>
+                )}
+            </Swiper>
+
+            {/* 커스텀 화살표 버튼 */}
             <button
-                className="w-7 h-7 text-black flex items-center justify-center absolute z-10 transition duration-250 transform -translate-y-1/2 top-1/2 focus:outline-none rounded-full text-sm md:text-base lg:w-9 lg:h-9 lg:text-xl xl:w-10 xl:h-10 3xl:w-12 3xl:h-12 3xl:text-2xl max-[1023px]:hidden left-4 bg-transparent shadow-transparent hover:bg-transparent hover:text-black !text-white !text-6xl swiper-button-disabled"
+                className="w-7 h-7 text-black flex items-center justify-center absolute z-10 transition duration-250 transform -translate-y-1/2 top-1/2 focus:outline-none rounded-full text-sm md:text-base lg:w-9 lg:h-9 lg:text-xl xl:w-10 xl:h-10 3xl:w-12 3xl:h-12 3xl:text-2xl max-[1023px]:hidden left-4 bg-transparent shadow-transparent hover:bg-transparent hover:text-black"
                 id="product-gallery-slider-prev"
                 aria-label="prev-button"
-                disabled=""
             >
                 <svg
                     width="26"
@@ -135,47 +61,10 @@ const SwipeImgComponent = ({ StImg }) => {
                             fill="white"
                         ></path>
                     </g>
-                    <defs>
-                        <filter
-                            id="filter0_d_19461_8348"
-                            x="0.505707"
-                            y="0.75"
-                            width="19.7443"
-                            height="26.5"
-                            filterUnits="userSpaceOnUse"
-                            colorInterpolationFilters="sRGB"
-                        >
-                            <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
-                            <feColorMatrix
-                                in="SourceAlpha"
-                                type="matrix"
-                                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                                result="hardAlpha"
-                            ></feColorMatrix>
-                            <feOffset></feOffset>
-                            <feGaussianBlur stdDeviation="2"></feGaussianBlur>
-                            <feComposite in2="hardAlpha" operator="out"></feComposite>
-                            <feColorMatrix
-                                type="matrix"
-                                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.35 0"
-                            ></feColorMatrix>
-                            <feBlend
-                                mode="normal"
-                                in2="BackgroundImageFix"
-                                result="effect1_dropShadow_19461_8348"
-                            ></feBlend>
-                            <feBlend
-                                mode="normal"
-                                in="SourceGraphic"
-                                in2="effect1_dropShadow_19461_8348"
-                                result="shape"
-                            ></feBlend>
-                        </filter>
-                    </defs>
                 </svg>
             </button>
             <button
-                className="w-7 h-7 text-black flex items-center justify-center absolute z-10 transition duration-250 transform -translate-y-1/2 top-1/2 focus:outline-none rounded-full text-sm md:text-base lg:w-9 lg:h-9 lg:text-xl xl:w-10 xl:h-10 3xl:w-12 3xl:h-12 3xl:text-2xl max-[1023px]:hidden right-4 bg-transparent shadow-transparent hover:bg-transparent hover:text-black !text-white !text-6xl"
+                className="w-7 h-7 text-black flex items-center justify-center absolute z-10 transition duration-250 transform -translate-y-1/2 top-1/2 focus:outline-none rounded-full text-sm md:text-base lg:w-9 lg:h-9 lg:text-xl xl:w-10 xl:h-10 3xl:w-12 3xl:h-12 3xl:text-2xl max-[1023px]:hidden right-4 bg-transparent shadow-transparent hover:bg-transparent hover:text-black"
                 id="product-gallery-slider-next"
                 aria-label="next-button"
             >
@@ -195,43 +84,6 @@ const SwipeImgComponent = ({ StImg }) => {
                             fill="white"
                         ></path>
                     </g>
-                    <defs>
-                        <filter
-                            id="filter0_d_19461_8348"
-                            x="0.505707"
-                            y="0.75"
-                            width="19.7443"
-                            height="26.5"
-                            filterUnits="userSpaceOnUse"
-                            colorInterpolationFilters="sRGB"
-                        >
-                            <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
-                            <feColorMatrix
-                                in="SourceAlpha"
-                                type="matrix"
-                                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                                result="hardAlpha"
-                            ></feColorMatrix>
-                            <feOffset></feOffset>
-                            <feGaussianBlur stdDeviation="2"></feGaussianBlur>
-                            <feComposite in2="hardAlpha" operator="out"></feComposite>
-                            <feColorMatrix
-                                type="matrix"
-                                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.35 0"
-                            ></feColorMatrix>
-                            <feBlend
-                                mode="normal"
-                                in2="BackgroundImageFix"
-                                result="effect1_dropShadow_19461_8348"
-                            ></feBlend>
-                            <feBlend
-                                mode="normal"
-                                in="SourceGraphic"
-                                in2="effect1_dropShadow_19461_8348"
-                                result="shape"
-                            ></feBlend>
-                        </filter>
-                    </defs>
                 </svg>
             </button>
         </div>

@@ -1,11 +1,13 @@
-import React,{useEffect} from 'react';
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper";
-import {useRecoilValue} from "recoil";
-import {tradeItemDetail} from "../../../recoil/selectors/tradeItemSelector.js";
+
+import React, { useEffect } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper';
+import { useRecoilValue } from 'recoil';
+import { tradeItemDetail } from '../../../recoil/selectors/tradeItemSelector.js';
 
 const SwipeImgComponent = ({ StImg }) => {
-    const {productInfo } = useRecoilValue(tradeItemDetail);
+    const { productInfo } = useRecoilValue(tradeItemDetail);
+
     const imageData = [
         {
             id: 1,
@@ -33,21 +35,23 @@ const SwipeImgComponent = ({ StImg }) => {
             src: 'https://img2.joongna.com/cafe-article-data/live/2024/06/22/1062585033/1719019322790_004_HPwbV.jpg?impolicy=resizeWatermark3&amp;isSecret=false',
         },
     ];
-    useEffect(()=> {
-     console.log(productInfo.images)
-    })
+
+    useEffect(() => {
+        console.log(productInfo.images);
+    });
+
     return (
         <div className="carouselWrapper relative product-gallery swiperThumbnail product-gallery-slider dotsCircle">
             <Swiper
                 slidesPerView={1} // 한 번에 하나의 슬라이드만 보여줌
                 slidesPerGroup={1} // 한 번에 하나의 슬라이드를 넘김
-                navigation ={{ 
+                navigation={{
                     nextEl: '#product-gallery-slider-next',
                     prevEl: '#product-gallery-slider-prev',
                 }} // 커스텀 화살표
                 pagination={{ clickable: true }} // 페이지네이션 활성화
                 modules={[Navigation, Pagination]} // Swiper 모듈 등록
-                onSlideChange={() => console.log("slide change")} 
+                onSlideChange={() => console.log('slide change')}
                 onSwiper={(swiper) => console.log(swiper)}
             >
                 {productInfo.images.map((image, i) => (

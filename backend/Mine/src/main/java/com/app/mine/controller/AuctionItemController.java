@@ -11,6 +11,7 @@ import com.app.mine.vo.UserVO;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -57,10 +58,10 @@ public class AuctionItemController {
         auctionItemService.saveAuctionItem(auctionItemVO, fileVOList);
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<AuctionItemVO> getAuctionItem(@PathVariable int id) {
-        AuctionItemVO item = auctionItemService.getAuctionItemById(id);
-        return item != null ? ResponseEntity.ok(item) : ResponseEntity.notFound().build();
+    @GetMapping("{auctionId}")
+    public ResponseEntity<Map<String, Object>> getAuctionItem(@PathVariable("auctionId") int id) {
+        Map<String, Object> auctionItem = auctionItemService.getAuctionItemById(id);
+        return ResponseEntity.ok(auctionItem);
     }
 
     @GetMapping
@@ -90,4 +91,22 @@ public class AuctionItemController {
         UserVO userInfo = (UserVO)session.getAttribute("userInfo");
         return auctionItemService.getMyAuctionItemList(userInfo);
     }
+
+    @PostMapping("auction-join")
+    public ResponseEntity<String> JoinAuction(
+            @RequestParam(value = "auctionId", required = true) Long auctionId,
+            @RequestParam(value = "userId", required = true) Long userId,
+            @RequestParam(value = "amount", required = true) Long amount) {
+        try {
+            // 경매 참여 처리 로직
+            // auctionItemService.insertAuctionJoin();
+
+            return ResponseEntity.ok("경매 참여 성공");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("경매 참여 실패: " + e.getMessage());
+        }
+    }
+
+    
+
 }

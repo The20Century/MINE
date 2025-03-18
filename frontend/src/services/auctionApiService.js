@@ -24,13 +24,30 @@ export const getAuctionItems = async (filters) => {
               },
           }
         : {};
-    console.log('config', config);
     const res = await axios.get('/api/auction-items/', config);
     return res.data;
 };
 
-export const getAuctionDetail = async () => {
-    const res = await axios.get('/data/auctionDetail.json');
+export const getAuctionDetail = async (auctionId) => {
+    const res = await axios.get(`/api/auction-items/${auctionId}`);
+    console.log('디테일 response', res);
+    return res.data;
+};
+
+export const paymentCompleteResponse = async ({ auctionId, userId, amount }) => {
+    const res = await axios.post(
+        '/api/auction-items/auction-join',
+        {
+            auctionId, //게시글 ID
+            userId, // 유저 ID
+            amount, // 결제 금액
+        },
+        {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }
+    );
     return res.data;
 };
 
@@ -49,26 +66,26 @@ export const saveAuction = async (input, filesData) => {
     formData.append('auctionItem', new Blob([JSON.stringify(auctionItemVO)], { type: 'application/json' }));
 
     // 파일 데이터에서 파일을 복구하여 FormData에 추가
-    const filePromises = filesData.map(fileData =>
+    const filePromises = filesData.map((fileData) =>
         fetch(fileData.url)
-        .then(response => response.blob())
-        .then(blob => {
-            // Blob을 File 객체로 변환, 파일 확장자를 사용하도록 변경
-            const filename = fileData.name; // 이미 사용자가 파일 이름을 지정
-            return new File([blob], filename, { type: `image/${fileData.type}` });
-        })
+            .then((response) => response.blob())
+            .then((blob) => {
+                // Blob을 File 객체로 변환, 파일 확장자를 사용하도록 변경
+                const filename = fileData.name; // 이미 사용자가 파일 이름을 지정
+                return new File([blob], filename, { type: `image/${fileData.type}` });
+            })
     );
 
     // 모든 파일이 준비되면 FormData에 추가하고 요청을 보냄
     const files = await Promise.all(filePromises);
-    files.forEach(file => {
+    files.forEach((file) => {
         formData.append('files', file);
     });
 
     // Axios 요청 보내기
     return axios.post('/api/auction-items/save', formData, {
         headers: {
-            'Content-Type': 'multipart/form-data'
-        }
+            'Content-Type': 'multipart/form-data',
+        },
     });
-}
+};

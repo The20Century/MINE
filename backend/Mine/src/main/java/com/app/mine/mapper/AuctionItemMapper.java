@@ -16,7 +16,7 @@ public interface AuctionItemMapper {
 
     public Integer selectLastAuctionItem();
 
-    public AuctionItemVO findAuctionItemById(int id);
+    public Map<String, Object> findAuctionItemById(int id);
 
 //    public List<AuctionItemVO> findAuctionItems(String category,
 //                                                Integer minPrice,
@@ -36,4 +36,10 @@ public interface AuctionItemMapper {
     public List<AuctionItemVO> selectMyAuctionItemList(UserVO userVO);
 
     public void insertAuctionItem(AuctionItemVO acAuctionItemVO);
+
+    public int selectAuctionJoin(); // 경매 아이템 결제 전 입찰최고금액 조회
+
+    public int insertAuctionJoin(int price); // 경매 참여
+
+
 }
