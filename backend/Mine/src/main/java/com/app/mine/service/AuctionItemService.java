@@ -19,7 +19,7 @@ public interface AuctionItemService {
 
     // 경매 아이템 목록 조회
         //    List<AuctionItemVO> getFilteredAuctionItems(String category, Integer minPrice, Integer maxPrice, String searchQuery, String sort);
-    List<AuctionItemVO> getAuctionItemList(SearchDTO searchDTO, Integer userId);
+    Map<String, Object> getAuctionItemList(SearchDTO searchDTO, Integer userId, Criteria criteria);
 
     Map<String, Object> findSearchAuctionItem(SearchDTO searchDTO);
 

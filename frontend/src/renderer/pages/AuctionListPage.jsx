@@ -29,7 +29,7 @@ const AuctionListPage = () => {
 
   // 게시물 목록 요청
   const {
-    data: items,
+    data: { items = [], pageNation = {} } = {},
     isLoading,
     isError,
   } = useQuery(
@@ -104,7 +104,7 @@ const AuctionListPage = () => {
             style={{ height: "auto !important" }}
           >
             <AuctionListFilterContainer
-              itemsCount={items.length}
+              itemsCount={pageNation.totalCount}
               filters={filters}
               setFilters={setFilters}
               categoryList={categoryList}
@@ -117,7 +117,7 @@ const AuctionListPage = () => {
               destinationType={destinationType}
               handleLikeClick={handleLikeClick}
             />
-            <AuctionListPaginationContainer />
+            <AuctionListPaginationContainer pageNation={pageNation} />
           </div>
         </div>
       )}

@@ -66,7 +66,9 @@ public class AuctionItemController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AuctionItemVO>> getAuctionItemList(
+    public ResponseEntity<Map<String, Object>> getAuctionItemList(
+            @RequestParam(value = "page", required = false) int page,
+            @RequestParam(value = "amount", required = false) int amount,
             @RequestParam(value = "category", required = false) String category,
             @RequestParam(value = "minPrice", required = false) Long minPrice,
             @RequestParam(value = "maxPrice", required = false) Long maxPrice,
@@ -74,7 +76,7 @@ public class AuctionItemController {
             @RequestParam(value = "sort", defaultValue = "likes") String sort,
             HttpSession session) {
 
-//        Criteria criteria = Criteria.builder().page(page).amount(amount).build();
+        Criteria criteria = Criteria.builder().page(page).amount(amount).build();
         SearchDTO searchDTO = new SearchDTO();
         searchDTO.setCategory(category);
         searchDTO.setType(sort);
@@ -87,7 +89,7 @@ public class AuctionItemController {
         if(userInfo != null) userInfo.getUserId();
         log.info("userId : {}",userId);
 
-        List<AuctionItemVO> res = auctionItemService.getAuctionItemList(searchDTO, userId);
+        Map<String, Object> res = auctionItemService.getAuctionItemList(searchDTO, userId, criteria);
 
         return ResponseEntity.ok(res);
     }

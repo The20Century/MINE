@@ -10,7 +10,7 @@ export const myAuctionProduct = async () => {
 };
 
 export const getAuctionItems = async (filters) => {
-  const { category, priceRange, searchQuery, sort } = filters;
+  const { category, priceRange, searchQuery, sort, page } = filters;
   const { minPrice, maxPrice } = priceRange;
 
   const config = filters
@@ -21,10 +21,13 @@ export const getAuctionItems = async (filters) => {
           maxPrice,
           searchQuery,
           sort,
+          page,
+          amount: 20,
         },
       }
     : {};
   const res = await axios.get("/api/auction-items/", config);
+  console.log("res.data", res.data);
   return res.data;
 };
 

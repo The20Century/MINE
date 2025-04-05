@@ -25,7 +25,7 @@ public interface AuctionItemMapper {
 //                                                String sort,
 //                                                Integer userId);
 
-    public List<AuctionItemVO> findAuctionItems(SearchDTO searchDTO, Integer userId);
+    public List<AuctionItemVO> findAuctionItems(SearchDTO searchDTO, @Param("page") PageDTO pageDTO ,Integer userId);
 
     public List<AuctionItemVO> selectAllAuctionItem(@Param("page") PageDTO pageDTO);
 

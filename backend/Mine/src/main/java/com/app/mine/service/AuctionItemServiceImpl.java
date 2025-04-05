@@ -49,8 +49,17 @@ public class AuctionItemServiceImpl implements AuctionItemService {
     }
 
     @Override
-    public List<AuctionItemVO> getAuctionItemList(SearchDTO searchDTO, Integer userId) {
-        return auctionItemMapper.findAuctionItems(searchDTO, userId);
+    public Map<String, Object> getAuctionItemList(SearchDTO searchDTO, Integer userId, Criteria criteria) {
+       int totalCount = auctionItemMapper.getAuctionItemCount(searchDTO);
+
+       PageDTO pageDTO = new PageDTO(criteria, totalCount, searchDTO,0);
+       pageDTO.setIS_SEARCH_DTO(true);
+       Map<String, Object> auctionItemsMap = new HashMap<>();
+        auctionItemsMap.put("pageNation", pageDTO.toPageNationMap());
+        auctionItemsMap.put("items", auctionItemMapper.findAuctionItems(searchDTO, pageDTO, userId));
+
+
+       return auctionItemsMap;
     }
 
     @Override

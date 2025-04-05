@@ -172,7 +172,7 @@
                 </otherwise>
             </choose>
         </if>
-
+        LIMIT #{page.criteria.amount} OFFSET #{page.criteria.offset};
     </select>
 
     <select id="selectAllAuctionItem" resultType="auctionItemVO">
