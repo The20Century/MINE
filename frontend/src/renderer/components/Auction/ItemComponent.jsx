@@ -5,6 +5,7 @@ import "../../../styles/item.css";
 import useFormattedPrice from "../../../hooks/useFormattedPrice";
 import { authState } from "../../../recoil/atoms/loginUserAtom";
 import { useRecoilState } from "recoil";
+import { calculateTimeDiff } from "../../../services/commonService";
 
 const ItemComponent = ({
   id,
@@ -43,10 +44,9 @@ const ItemComponent = ({
       break;
   }
 
+  const remainTime = calculateTimeDiff(endTime);
   // 상위에서 Props로 전달 받은 목록 (상품 이미지, 타이틀, 가격, 등록시간, 찜 수, 채팅 수) 가 포함된 데이터
   // 등록시간 기준 현재시간과 비교하여 몇 분전 계산하는 로직 필요
-  // 다른 파일에서 로직을 생성하고 여기에서 함수를 가져오는게 깔끔해보임
-  // 우리 서비스에서 네이버페이는 사용하지 않기 때문에 네이버페이는 빼도 될거같음
 
   return (
     <li className="">
@@ -59,7 +59,11 @@ const ItemComponent = ({
             <img
               alt="(정품) 프라다 버킷백"
               referrerPolicy="no-referrer"
-              src="https://img2.joongna.com/media/original/2024/08/07/17230142963766P1_R9mil.jpg?impolicy=thumb&amp;size=150"
+              src={
+                image
+                  ? `/api/files/display?filePath=${image}`
+                  : "https://img2.joongna.com/media/original/2024/08/07/17230142963766P1_R9mil.jpg?impolicy=thumb&amp;size=150"
+              }
               decoding="async"
               data-nimg="fill"
               className="bg-gray-300 object-cover h-full group-hover:scale-105 w-full transition duration-200 ease-in rounded-md"
@@ -145,7 +149,7 @@ const ItemComponent = ({
                       fill="#626262"
                     />
                   </svg>
-                  <span className="pl-[8px]">7일 00시간 </span>
+                  <span className="pl-[8px]">{remainTime} </span>
                 </div>
               </div>
             )}

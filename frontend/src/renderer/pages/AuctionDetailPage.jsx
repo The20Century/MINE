@@ -37,7 +37,7 @@ const AuctionDetailPage = () => {
       enabled: !!auctionId, // productId 있을 때만 호출
       onSuccess: (data) => {
         setAuctionDetailInfo(data); // 성공 시, Recoil 상태에 데이터 저장
-        setFilePaths(data.filePaths);
+        setFilePaths(data.file_paths);
       },
       onError: (error) => {
         console.error("데이터를 가져오는 중 오류 발생:", error);

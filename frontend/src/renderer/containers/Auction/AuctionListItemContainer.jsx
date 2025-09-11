@@ -13,7 +13,7 @@ const AuctionListItemContainer = ({
         <ItemComponent
           key={i}
           id={item.auctionItemId}
-          image={item.image}
+          image={item.filePath}
           title={item.auctionItemName}
           price={item.auctionItemHighestPrice}
           endTime={item.auctionItemEndTime}

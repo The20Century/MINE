@@ -4,6 +4,10 @@ import useFormattedPrice from "../../../hooks/useFormattedPrice";
 import useRemainTime from "../../../hooks/useRemainTime";
 import SellerInfo from "../../components/Common/SellerInfo";
 import PaymentButtonComponent from "../../components/Auction/PaymentButtonComponent";
+import {
+  formatDateToTime,
+  formatDateToYMD,
+} from "../../../services/commonService";
 
 const ProductInfoContainer = ({
   StImg,
@@ -24,6 +28,9 @@ const ProductInfoContainer = ({
   const formattedPrice = useFormattedPrice(
     auctionDetailInfo.auction_item_highest_price
   );
+
+  const createdAt =
+    formatDateToYMD(created_at) + " " + formatDateToTime(created_at);
 
   return (
     <div>
@@ -50,7 +57,7 @@ const ProductInfoContainer = ({
         <AuctionMetrics
           auctionItemEndTime={auction_item_end_time}
           auctionItemCondition={auction_item_condition}
-          createdAt={created_at}
+          createdAt={createdAt}
         />
         <SellerInfo
           userEmail={user_email}

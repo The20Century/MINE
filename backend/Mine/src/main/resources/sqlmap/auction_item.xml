@@ -6,49 +6,7 @@
     <!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: INCLUDE ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::  -->
 
     <!-- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::  QUERY  ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::  -->
-    <!-- 경매 아이템 ID로 조회 -->
-<!--    <select id="findAuctionItemById" resultType="map">-->
-<!--        SELECT-->
-<!--        a.auction_item_id,-->
-<!--        a.auction_item_name,-->
-<!--        a.auction_item_explain,-->
-<!--        a.auction_item_start_price,-->
-<!--        a.auction_item_highest_price,-->
-<!--        a.auction_item_end_time,-->
-<!--        a.created_at,-->
-<!--        c.category_value AS category,-->
-<!--        a.auction_item_status,-->
-<!--        a.auction_item_condition,-->
-<!--        u.user_email,-->
-<!--        u.user_trust_score,-->
-<!--        u.user_nickname,-->
-<!--        ARRAY_AGG(f.file_path) AS file_paths-->
-<!--        FROM-->
-<!--        tbl_auction_item a-->
-<!--        JOIN-->
-<!--        tbl_category c ON c.category_detail = a.category_id  &#45;&#45; 카테고리 정보를 연결 (필요한 경우)-->
-<!--        JOIN-->
-<!--        tbl_user u ON a.user_id = u.user_id                  &#45;&#45; 사용자 정보 연결-->
-<!--        LEFT JOIN-->
-<!--        tbl_file f ON a.auction_item_id = f.used_item_id     &#45;&#45; 파일 경로 정보 연결-->
-<!--        WHERE-->
-<!--        a.auction_item_id = #{auctionItemId}-->
-<!--        GROUP BY-->
-<!--        a.auction_item_id,-->
-<!--        a.auction_item_name,-->
-<!--        a.auction_item_explain,-->
-<!--        a.auction_item_start_price,-->
-<!--        a.auction_item_highest_price,-->
-<!--        a.auction_item_end_time,-->
-<!--        a.created_at,-->
-<!--        c.category_value,-->
-<!--        a.auction_item_status,-->
-<!--        a.auction_item_condition,-->
-<!--        u.user_email,-->
-<!--        u.user_trust_score,-->
-<!--        u.user_nickname;-->
 
-<!--    </select>-->
     <!-- 경매 아이템 ID로 조회 -->
     <select id="findAuctionItemById" resultType="map">
         SELECT
@@ -77,7 +35,7 @@
         'auction_join_status', ja.auction_join_status,
         'auction_join_created_at', ja.created_at,
         'auction_join_user_nickname', uj.user_email
-        )
+        ) ORDER BY ja.auction_join_price
         ) AS tbl_auction_join
         FROM
         tbl_auction_item a
@@ -86,7 +44,7 @@
         JOIN
         tbl_user u ON a.user_id = u.user_id                  -- 사용자 정보 연결
         LEFT JOIN
-        tbl_file f ON a.auction_item_id = f.used_item_id     -- 파일 경로 정보 연결
+        tbl_file f ON a.auction_item_id = f.auction_item_id     -- 파일 경로 정보 연결
         LEFT JOIN
         tbl_auction_join ja ON a.auction_item_id = ja.auction_item_id  -- 경매 참여 내역을 연결
         LEFT JOIN
@@ -113,6 +71,7 @@
     <select id="findAuctionItems" parameterType="map" resultType="AuctionItemVO">
         SELECT
             AI.*,
+            F.file_path,
             COALESCE(COUNT(DISTINCT(AJ.auction_join_id)),0) AS bid_count,
             COALESCE(COUNT(DISTINCT(tbl_like.user_id)),0) AS like_count,
             CASE
@@ -124,6 +83,10 @@
             ON AI.auction_item_id = AJ.auction_item_id
         LEFT JOIN tbl_like
             ON AI.auction_item_id = tbl_like.auction_item_id
+        LEFT JOIN (
+        SELECT auction_item_id, file_path
+        FROM tbl_file
+        ) AS F ON AI.auction_item_id = F.auction_item_id
 
         <trim prefix="WHERE" prefixOverrides="AND|OR">
             <!-- 카테고리 필터링 -->
@@ -148,7 +111,7 @@
                 </foreach>
             </if>
         </trim>
-        GROUP BY AI.auction_item_id
+        GROUP BY AI.auction_item_id, F.file_path
 
 <!--        정렬 기준 (정렬 기준이 있을 경우만)-->
         <if test="searchDTO.type != null">
